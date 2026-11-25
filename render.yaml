@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: chat-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////data/app.db
+      - key: ENABLE_FAILURE_SIMULATION
+        value: "true"
+      - key: LLM_MODEL
+        value: gemini/gemini-2.0-flash
+      - key: LLM_API_KEYS
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: LLM_TIMEOUT_SECONDS
+        value: "45"
+      - key: CACHE_TTL_SECONDS
+        value: "86400"
+    disk:
+      name: chat-data
+      mountPath: /data
+      sizeGB: 1
+
+  - type: web
+    name: chat-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: API_BASE_URL
+        sync: false
